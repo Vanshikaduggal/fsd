@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        .sidebar {
+            width: 250px;
+            background: #333;
+            color: white;
+            padding: 20px;
+            height: 100%;
+        }
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            margin: 5px 0;
+            background: #444;
+            border-radius: 5px;
+        }
+        .sidebar a:hover {
+            background: #555;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table th, .table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Dashboard</h2>
+        <a href="#" onclick="showSection('users')">Users</a>
+        <a href="#" onclick="showSection('products')">Products</a>
+        <a href="#" onclick="showSection('inventory')">Inventory</a>
+        <a href="login.html">Logout</a>
+    </div>
+
+    <div class="content">
+        <div id="users" class="section">
+            <h2>Users</h2>
+            <table class="table" id="users-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="products" class="section" style="display:none;">
+            <h2>Products</h2>
+            <table class="table" id="products-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="inventory" class="section" style="display:none;">
+            <h2>Inventory</h2>
+            <table class="table" id="inventory-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(div => div.style.display = 'none');
+            document.getElementById(section).style.display = 'block';
+            fetchData(section);
+        }
+
+        function fetchData(section) {
+            fetch(`/${section}`)
+                .then(response => response.json())
+                .then(data => {
+                    let tableBody = document.getElementById(`${section}-table`).getElementsByTagName('tbody')[0];
+                    tableBody.innerHTML = ''; 
+
+                    data.forEach(row => {
+                        let newRow = tableBody.insertRow();
+                        if (section === 'users') {
+                            newRow.insertCell(0).textContent = row.name;
+                            newRow.insertCell(1).textContent = row.email;
+                        } else if (section === 'products') {
+                            newRow.insertCell(0).textContent = row.name;
+                            newRow.insertCell(1).textContent = row.price;
+                            newRow.insertCell(2).textContent = row.description;
+                        } else if (section === 'inventory') {
+                            newRow.insertCell(0).textContent = row.name;
+                            newRow.insertCell(1).textContent = row.quantity;
+                            newRow.insertCell(2).textContent = row.price;
+                        }
+                    });
+                })
+                .catch(error => console.error("Error fetching data:", error));
+        }
+    </script>
+
+</body>
+</html>
